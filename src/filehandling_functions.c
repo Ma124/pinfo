@@ -701,9 +701,7 @@ opendirfile(int number)
 		fseek(id, 0, SEEK_SET);
 		if (fread(tmp, 1, filelen, id)!=filelen)
 		{
-			printf(_("Error while reading file '%s'"), tmp);
-			closeprogram();
-			exit(1);
+			fatal_error(1, _("Error while reading file '%s'"), tmp);
 		}
 		fclose(id);
 		id = fopen(tmpfilename, "w");
@@ -1245,10 +1243,8 @@ seeknode(int tag_table_pos, FILE ** Id)
 				if (newid == NULL)
 				{
 					return -1;
-					closeprogram();
-					printf(_("Error: could not open info file part"));
-					printf("\n");
-					exit(1);
+					// TODO add newline
+					fatal_error(1, _("Error: could not open info file part"));
 				}
 				fclose(id);
 				id = newid;

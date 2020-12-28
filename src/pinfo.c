@@ -118,7 +118,7 @@ main(int argc, char *argv[])
 					strncat(filename, argv[i], sizeof(filename)-strlen(filename)-2);
 					strncat(filename, " ", 2);
 				}
-				exit(handlemanual(filename));
+				fatal(handlemanual(filename));
 			}
 
 
@@ -145,8 +145,7 @@ main(int argc, char *argv[])
 				case 'n':
 					if (!optarg)
 					{
-						printf(_("--node option used without argument\n"));
-						exit(1);
+						fatal_error(1, _("--node option used without argument\n"));
 					}
 					pinfo_start_node = malloc(strlen(optarg) + 1);
 					strcpy(pinfo_start_node, optarg);
@@ -155,8 +154,7 @@ main(int argc, char *argv[])
 				case 1:
 					if (!optarg)
 					{
-						printf(_("--rcfile option used without argument\n"));
-						exit(1);
+						fatal_error(1, _("--rcfile option used without argument\n"));
 					}
 					rcfile = strdup(optarg);
 					/* parse user-defined config file */
@@ -186,9 +184,9 @@ main(int argc, char *argv[])
 								"    --node=nodename, --node nodename  jump directly to the node nodename\n" \
 								"    --rcfile=file, --rcfile file      use alternate rcfile\n"),
 							argv[0]);
-					exit(0);
+					fatal(0);
 				case 'v':
-					exit(0);
+					fatal(0);
 				case 'm':
 					checksu();
 					if (verbose)
@@ -199,7 +197,7 @@ main(int argc, char *argv[])
 						strncat(filename, argv[i], sizeof(filename)-strlen(filename)-2);
 						strncat(filename, " ", 2);
 					}
-					exit(handlemanual(filename));
+					fatal(handlemanual(filename));
 				case 'f':
 				case 'r':
 					strncpy(filename, argv[argc - 1], 200);
@@ -225,7 +223,7 @@ main(int argc, char *argv[])
 					use_apropos = 1;
 					plain_apropos = 1;
 					strncpy(filename, argv[argc - 1], 200);
-					exit(handlemanual(filename));
+					fatal(handlemanual(filename));
 					break;
 				case 'c':
 					CutManHeaders = 1;
@@ -237,7 +235,7 @@ main(int argc, char *argv[])
 					CutEmptyManLines = 1;
 					break;
 				case '?':
-					exit(1);
+					fatal(1);
 			}
 		}
 		while (command_line_option != EOF);
@@ -309,7 +307,7 @@ main(int argc, char *argv[])
 		if (id == NULL)
 		{
 			printf(_("Error: could not open info file, trying manual\n"));
-			exit(handlemanual(filename));
+			fatal(handlemanual(filename));
 		}
 		/* search for indirect entries, if any */
 		if (seek_indirect(id))
@@ -351,7 +349,7 @@ main(int argc, char *argv[])
 				if (TagTableEntries < 1)
 				{
 					printf(_("This doesn't look like info file...\n"));
-					exit(handlemanual(filename));
+					fatal(handlemanual(filename));
 				}
 			}
 			else
@@ -382,7 +380,7 @@ main(int argc, char *argv[])
 				tag_table_pos = gettagtablepos(FirstNodeName);
 				if (seeknode(tag_table_pos, &id)!=0)
 				{
-					exit(-1);
+					fatal(-1);
 				}
 			}
 			/* read the node */
@@ -515,7 +513,7 @@ main(int argc, char *argv[])
 							tmp = 0;
 							if (id == NULL)
 							{
-								closeprogram();
+								closeprogram(); // seems safe
 								printf(_("Unexpected error.\n"));
 								return 1;
 							}
@@ -573,7 +571,7 @@ main(int argc, char *argv[])
 									create_tag_table(id);
 									if (TagTableEntries < 1)
 									{
-										closeprogram();
+										closeprogram(); // seems safe
 										printf(_("This doesn't look like info file...\n"));
 										return 1;
 									}
@@ -599,7 +597,7 @@ main(int argc, char *argv[])
 		}
 		while (work_return_value.node);
 		fclose(id);
-		closeprogram();
+		closeprogram(); // safe
 		/* free's at the end are optional, but look nice :) */
 		freelinks();
 		freeitem(&type, &message, &lines);
@@ -691,8 +689,7 @@ checksu()
 
 	if (result != 0)
 	{
-		printf(_("Unable to drop root privileges: %s"), strerror(errno));
-		exit(-1);
+		fatal_error(-1, _("Unable to drop root privileges: %s"), strerror(errno));
 	}
 
 }

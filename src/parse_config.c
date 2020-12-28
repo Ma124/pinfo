@@ -98,8 +98,7 @@ parse_config(void)
 		f = fopen(rcfile, "r");
 		if (f == NULL)
 		{
-			fprintf(stderr, _("Can't open config file!\n"));
-			exit(1);
+			fatal_error(1, _("Can't open config file!\n"));
 		}
 	}
 	else
@@ -148,8 +147,7 @@ parse_config(void)
 		{
 			line_number++;
 			fclose(f);
-			fprintf(stderr, _("Parse error in config file on line %d\n"), line_number);
-			exit(1);
+			fatal_error(1, _("Parse error in config file on line %d\n"), line_number);
 		}
 		else
 			line_number++;

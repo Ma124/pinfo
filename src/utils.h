@@ -22,6 +22,31 @@
 #ifndef __UTILS_H
 #define __UTILS_H
 
+/* TODO
+ * C++>20:
+ *   fprintf(stderr, format __VA_OPT__(,) __VA_ARGS__);
+ * else:
+ *   fprintf(stderr, format, ##__VA_ARGS__);
+ */
+
+/* formats error message and prints it to stderr */
+#define error(format, ...) do {                        \
+	fprintf(stderr, format, ##__VA_ARGS__); \
+} while(0)
+
+/* calls error and cleanly exits with code */
+#define fatal_error(code, format, ...) do {  \
+	closeprogram();                          \
+	error(format, ##__VA_ARGS__);            \
+	exit(code);                              \
+} while(0)
+
+/* cleanly exits with code */
+#define fatal(code) do { \
+	closeprogram();      \
+	exit(code);          \
+} while(0)
+
 extern char *safe_user;
 extern char *safe_group;
 

@@ -116,9 +116,7 @@ xmalloc(size_t size)
 #endif
 	if (value == 0)
 	{
-		closeprogram();
-		printf(_("Virtual memory exhausted\n"));
-		exit(1);
+		fatal_error(1, _("Virtual memory exhausted\n"));
 	}
 #ifdef ___DEBUG___
 	for (i = 0; i < addrescount; i++)
@@ -172,9 +170,7 @@ xrealloc(void *ptr, size_t size)
 #endif
 	if (value == 0)
 	{
-		closeprogram();
-		printf(_("Virtual memory exhausted\n"));
-		exit(1);
+		fatal_error(1, _("Virtual memory exhausted\n"));
 	}
 #ifdef ___DEBUG___
 	fprintf(stderr, "%lu, with size %lu\n",(unsigned long) value,(unsigned long) size);
@@ -212,8 +208,7 @@ xsystem(const char *command)
 	int result = system_check(command);
 	if (result!=0)
 	{
-		printf(_("Failed to execute command '%s': %i"), command, result);
-		exit(2);
+		fatal_error(2, _("Failed to execute command '%s': %i"), command, result);
 	}
 }
 
@@ -252,8 +247,7 @@ checkfilename(char *filename)
 			(strchr(filename, '&')) ||
 			(strchr(filename, ';')))
 	{
-		printf(_("Illegal characters in filename!\n*** %s\n"), filename);
-		exit(1);
+		fatal_error(1, _("Illegal characters in filename!\n*** %s\n"), filename);
 	}
 }
 
@@ -428,8 +422,10 @@ init_curses()
 void
 closeprogram()
 {
-	if (curses_open)
+	if (curses_open) {
 		myendwin();
+		curses_open = 0;
+	}
 	if (ClearScreenAtExit)
 		xsystem("clear");
 	else
@@ -438,11 +434,13 @@ closeprogram()
 	{
 		unlink(tmpfilename1);
 		xfree(tmpfilename1);
+		tmpfilename1 = 0;
 	}
 	if (tmpfilename2)
 	{
 		unlink(tmpfilename2);
 		xfree(tmpfilename2);
+		tmpfilename2 = 0;
 	}
 }
 
@@ -857,9 +855,7 @@ make_tempfile()
 	/* bug out if it failed */
 	if (fd == -1)
 	{
-		closeprogram();
-		printf(_("Couldn't open temporary file\n"));
-		exit(1);
+		fatal_error(1, _("Couldn't open temporary file\n"));
 	}
 
 	/* allocate a new string and copy the filename there */

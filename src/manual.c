@@ -186,8 +186,7 @@ set_initial_history(char *name)
 		pathFile = popen(buf, "r");
 		if (fgets(buf, sizeof(buf), pathFile)==NULL)
 		{
-			fprintf(stderr, "Error executing command '%s'\n", buf);
-			exit(1);
+			fatal_error(1, "Error executing command '%s'\n", buf);
 		}
 		pclose(pathFile);
 		/* buf will be of the form "/usr/share/man/man1/sleep.1.gz". We
@@ -1587,7 +1586,7 @@ skip_search:
 			}
 		}
 	}
-	closeprogram();
+	closeprogram(); // seems safe
 	return -1;
 }
 

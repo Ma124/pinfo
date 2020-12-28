@@ -26,11 +26,11 @@
 void
 handle_crash(int signum)
 {
-	closeprogram();
+	closeprogram(); // safe
 	fprintf(stderr, "Caught signal %d, bye!\n", signum);
 	if (signum == SIGSEGV)
 		perror("pinfo: crash with");
-	exit(1);
+	exit(1); // safe
 }
 
 void
